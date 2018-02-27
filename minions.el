@@ -107,6 +107,11 @@ minor-modes that is usually displayed directly in the mode line."
 
 ;;; Menu
 
+(defcustom minions-mode-line-lighter " ;-"
+  "Minor mode lighter to use in the mode-line."
+  :group 'minions
+  :type 'string)
+
 (defvar minions-mode-line-minor-modes-map
   (let ((map (make-sparse-keymap)))
     (define-key map [mode-line down-mouse-1] 'minions-minor-modes-menu)
@@ -137,7 +142,7 @@ mouse-2: Show help for minor mode\n\
 mouse-3: Toggle minor modes"
 			local-map ,mode-line-minor-mode-keymap)
           " "
-          `(:propertize ";-"
+          `(:propertize minions-mode-line-lighter
                         mouse-face mode-line-highlight
                         help-echo "Minions
 mouse-1: Display minor modes menu"
