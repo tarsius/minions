@@ -85,6 +85,11 @@ global minor-mode, nil otherwise."
   :group 'minions
   :type '(repeat (symbol :tag "Mode")))
 
+(defcustom minions-mode-line-lighter ";-"
+  "Text used for the mode menu in the mode line."
+  :group 'minions
+  :type 'string)
+
 ;;; Mode
 
 ;;;###autoload
@@ -106,11 +111,6 @@ minor-modes that is usually displayed directly in the mode line."
             'mode-line-modes)))
 
 ;;; Menu
-
-(defcustom minions-mode-line-lighter " ;-"
-  "Minor mode lighter to use in the mode-line."
-  :group 'minions
-  :type 'string)
 
 (defvar minions-mode-line-minor-modes-map
   (let ((map (make-sparse-keymap)))
