@@ -226,12 +226,12 @@ Otherwise the entry can only be used to toggle the mode."
            (list 'menu-item (symbol-name mode) wrap)))))
 
 (defun minions--define-toggle (map mode)
-  (define-key map (vector mode)
-    (list 'menu-item
-          (symbol-name mode)
-          (or (get mode :minor-mode-function) mode)
-          :help (minions--documentation mode)
-          :button (cons :toggle mode))))
+  (let ((fn (or (get mode :minor-mode-function) mode)))
+    (when (functionp fn)
+      (define-key map (vector mode)
+        (list 'menu-item (symbol-name mode) fn
+              :help (minions--documentation fn)
+              :button (cons :toggle mode))))))
 
 (defun minions--help-menu ()
   (pcase-let ((map (make-sparse-keymap))
@@ -246,14 +246,15 @@ Otherwise the entry can only be used to toggle the mode."
     map))
 
 (defun minions--define-help (map mode)
-  (define-key map (vector mode)
-    (list 'menu-item
-          (symbol-name mode)
-          (lambda ()
-            (interactive)
-            (describe-minor-mode-from-symbol
-             (or (get mode :minor-mode-function) mode)))
-          :help (minions--documentation mode))))
+  (let ((fn (or (get mode :minor-mode-function) mode)))
+    (when (functionp fn)
+      (define-key map (vector mode)
+        (list 'menu-item
+              (symbol-name mode)
+              (lambda ()
+                (interactive)
+                (describe-minor-mode-from-symbol fn))
+              :help (minions--documentation mode))))))
 
 (defun minions--documentation (function)
   (let ((doc (documentation function t)))
