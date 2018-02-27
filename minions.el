@@ -195,6 +195,7 @@ Otherwise the entry can only be used to toggle the mode."
     (dolist (mode (cl-set-difference
                    (cl-union (cl-mapcan (pcase-lambda (`(,mode ,_))
                                           (and (boundp mode)
+                                               (fboundp mode)
                                                (symbol-value mode)
                                                (list mode)))
                                         minor-mode-alist)
