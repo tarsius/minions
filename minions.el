@@ -104,9 +104,9 @@ minor-modes that is usually displayed directly in the mode line."
   (if minions-mode
       (let ((banana (cl-subst 'minions-mode-line-modes
                               'mode-line-modes
-                              mode-line-format
+                              (default-value 'mode-line-format)
                               :test #'equal)))
-        (if (eq banana mode-line-format)
+        (if (eq banana (default-value 'mode-line-format))
             (progn (setq minions-mode nil)
                    (error "Cannot turn on Minions mode"))
           (setq-default mode-line-format banana)))
