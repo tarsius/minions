@@ -13,4 +13,4 @@ default.  To use the menu like this, enable Minions mode.
 Alternatively the menu can be bound globally, for example:
 `(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)`.
 
-![screenshot](https://emacsair.me/assets/readme/minions.png)
+![screenshot](http://readme.emacsair.me/minions.png)
