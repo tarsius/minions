@@ -14,3 +14,6 @@ Alternatively the menu can be bound globally, for example:
 `(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)`.
 
 ![screenshot](http://readme.emacsair.me/minions.png)
+
+Compatibility information can be found
+[here](https://github.com/tarsius/minions/wiki).
