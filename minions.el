@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/minions
 
-;; Package-Requires: ((emacs "25.3") (dash "2.13.0"))
+;; Package-Requires: ((emacs "25.2") (dash "2.13.0"))
 
 ;; This file is not part of GNU Emacs.
 
