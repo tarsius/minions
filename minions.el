@@ -39,8 +39,10 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'subr-x)
 (require 'dash)
+
+(eval-when-compile
+  (require 'subr-x))
 
 ;;; Options
 
