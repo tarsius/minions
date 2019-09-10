@@ -100,6 +100,20 @@ global minor-mode, nil otherwise."
                  (cons (string :tag "Before string")
                        (string :tag "After string"))))
 
+
+;;; Faces
+
+(defgroup minions-faces nil
+  "Faces used by minions."
+  :group 'minions
+  :group 'faces)
+
+(defface minions-mode-line-lighter
+  '((t  nil))
+  "Face used for the minions lighter in the mode line."
+  :group 'minions-faces)
+
+
 ;;; Mode
 
 ;;;###autoload
@@ -153,6 +167,7 @@ mouse-3: Toggle minor modes"
 			local-map ,mode-line-minor-mode-keymap)
           " "
           `(:propertize minions-mode-line-lighter
+                        face minions-mode-line-lighter
                         mouse-face mode-line-highlight
                         help-echo "Minions
 mouse-1: Display minor modes menu"
