@@ -103,15 +103,11 @@ global minor-mode, nil otherwise."
 
 ;;; Faces
 
-(defgroup minions-faces nil
-  "Faces used by minions."
-  :group 'minions
-  :group 'faces)
-
 (defface minions-mode-line-lighter
   '((t  nil))
-  "Face used for the minions lighter in the mode line."
-  :group 'minions-faces)
+"Face used for the minions lighter in the mode line."
+  :group 'minions
+  :group 'faces)
 
 
 ;;; Mode
