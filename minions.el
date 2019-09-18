@@ -1,6 +1,6 @@
 ;;; minions.el --- A minor-mode menu for the mode line  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2018  Jonas Bernoulli
+;; Copyright (C) 2018-2019  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/minions
@@ -90,11 +90,13 @@ global minor-mode, nil otherwise."
 
 (defcustom minions-mode-line-lighter ";-"
   "Text used for the mode menu in the mode line."
+  :package-version '(minions . "0.2.0")
   :group 'minions
   :type 'string)
 
 (defcustom minions-mode-line-delimiters '("(" . ")")
   "Strings placed around mode elements in the mode line."
+  :package-version '(minions . "0.3.1")
   :group 'minions
   :type '(choice (const :tag "No delimiters")
                  (cons (string :tag "Before string")
