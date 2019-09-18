@@ -88,6 +88,13 @@ global minor-mode, nil otherwise."
   :group 'minions
   :type '(repeat (symbol :tag "Mode")))
 
+(defcustom minions-mode-line-face nil
+  "Face used for the mode menu in the mode line."
+  :package-version '(minions . "0.3.2")
+  :group 'minions
+  :group 'mode-line-faces
+  :type '(choice (const :tag "No face" nil) face))
+
 (defcustom minions-mode-line-lighter ";-"
   "Text used for the mode menu in the mode line."
   :package-version '(minions . "0.2.0")
@@ -154,11 +161,12 @@ mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes"
 			local-map ,mode-line-minor-mode-keymap)
           " "
-          `(:propertize minions-mode-line-lighter
-                        mouse-face mode-line-highlight
-                        help-echo "Minions
+          '(:eval (propertize minions-mode-line-lighter
+                              'face minions-mode-line-face
+                              'mouse-face 'mode-line-highlight
+                              'help-echo "Minions
 mouse-1: Display minor modes menu"
-                        local-map ,minions-mode-line-minor-modes-map)
+                              'local-map minions-mode-line-minor-modes-map))
           '(:eval (cdr minions-mode-line-delimiters))
           (propertize "%]" 'help-echo recursive-edit-help-echo)
           " "))
