@@ -5,7 +5,7 @@ PKG = minions
 ELS   = $(PKG).el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  =
+DEPS  = dash
 
 EMACS      ?= emacs
 EMACS_ARGS ?=
