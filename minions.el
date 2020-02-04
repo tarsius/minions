@@ -178,15 +178,17 @@ minor modes in a space conserving menu.")
 (put 'minions-mode-line-modes 'risky-local-variable t)
 (make-variable-buffer-local 'minions-mode-line-modes)
 
-(defun minions-minor-modes-menu ()
+(defun minions-minor-modes-menu (event)
   "Pop up a menu with minor mode menus and toggles.
 
 The menu has an entry for every enabled minor mode, except those
 that are listed in `minions-blacklist'.  It also has entries for
 modes that are not enabled but listed in `minions-whitelist'.
 If a mode defines a menu, then its entry shows that as a submenu.
-Otherwise the entry can only be used to toggle the mode."
-  (interactive)
+Otherwise the entry can only be used to toggle the mode.
+
+EVENT has to be an input event."
+  (interactive "@e")
   (pcase-let ((map (make-sparse-keymap))
               (`(,local ,global) (minions--modes)))
     (define-key map [minions--help-menu]
@@ -208,7 +210,7 @@ Otherwise the entry can only be used to toggle the mode."
           (define-key map (vector mode) menu)
         (minions--define-toggle map mode)))
     (define-key map [--local] (list 'menu-item "Local Modes"))
-    (popup-menu map)))
+    (x-popup-menu event map)))
 
 (defun minions--modes ()
   (let (local global)
