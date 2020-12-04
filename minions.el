@@ -209,7 +209,9 @@ Otherwise the entry can only be used to toggle the mode."
           (define-key map (vector mode) menu)
         (minions--define-toggle map mode)))
     (define-key map [--local] (list 'menu-item "Local Modes"))
-    (popup-menu map)))
+    (condition-case nil
+        (popup-menu map)
+      (quit nil))))
 
 (defun minions--modes ()
   (let (local global)
