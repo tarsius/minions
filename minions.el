@@ -211,7 +211,7 @@ EVENT has to be an input event."
           (define-key map (vector mode) menu)
         (minions--define-toggle map mode)))
     (define-key map [--local] (list 'menu-item "Local Modes"))
-    (x-popup-menu event map)))
+    (popup-menu map event)))
 
 (defun minions--modes ()
   (let (local global)
