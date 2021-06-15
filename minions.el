@@ -157,12 +157,12 @@ mouse-3: Toggle minor modes"
           `(:propertize ("" (:eval (seq-filter (pcase-lambda (`(,mode))
                                                  (memq mode minions-direct))
                                                minor-mode-alist)))
-			mouse-face mode-line-highlight
-			help-echo "Minor mode
+                        mouse-face mode-line-highlight
+                        help-echo "Minor mode
 mouse-1: Display minor mode menu
 mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes"
-			local-map ,mode-line-minor-mode-keymap)
+                        local-map ,mode-line-minor-mode-keymap)
           " "
           '(:eval (propertize minions-mode-line-lighter
                               'face minions-mode-line-face
