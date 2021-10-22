@@ -41,7 +41,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'seq)
 
 (eval-when-compile
   (require 'subr-x))
@@ -154,9 +153,7 @@ mouse-3: Toggle minor modes"
                       'mouse-face 'mode-line-highlight
                       'local-map (make-mode-line-mouse-map
                                   'mouse-2 #'mode-line-widen))
-          `(:propertize ("" (:eval (seq-filter (pcase-lambda (`(,mode))
-                                                 (memq mode minions-direct))
-                                               minor-mode-alist)))
+          `(:propertize ("" (:eval (minions--modes-direct)))
                         mouse-face mode-line-highlight
                         help-echo "Minor mode
 mouse-1: Display minor mode menu
@@ -214,6 +211,11 @@ Otherwise the entry can only be used to toggle the mode."
     (condition-case nil
         (popup-menu map)
       (quit nil))))
+
+(defun minions--modes-direct ()
+  (cl-remove-if-not (lambda (mode)
+                      (memq (car mode) minions-direct))
+                    minor-mode-alist))
 
 (defun minions--modes ()
   (let (local global)
