@@ -45,20 +45,27 @@
 (eval-when-compile
   (require 'subr-x))
 
+(define-obsolete-variable-alias 'minions-blacklist
+  'minions-hidden-modes "Minions 0.3.7")
+(define-obsolete-variable-alias 'minions-whitelist
+  'minions-available-modes "Minions 0.3.7")
+(define-obsolete-variable-alias 'minions-direct
+  'minions-prominent-modes "Minions 0.3.7")
+
 ;;; Options
 
 (defgroup minions nil
   "A minor-mode menu for the mode line."
   :group 'mode-line)
 
-(defcustom minions-blacklist nil
+(defcustom minions-hidden-modes nil
   "List of minor-modes that are never shown in the mode menu.
 
 These modes are not even displayed when they are enabled."
   :group 'minions
   :type '(repeat (symbol :tag "Mode")))
 
-(defcustom minions-whitelist
+(defcustom minions-available-modes
   ;; Based on elements of `mode-line-mode-menu'.
   '((abbrev-mode . nil)
     (auto-fill-mode . nil)
@@ -84,7 +91,7 @@ global minor-mode, nil otherwise."
                                 :on "global (non-nil)"
                                 :off "local (nil)"))))
 
-(defcustom minions-direct nil
+(defcustom minions-prominent-modes nil
   "List of minor-modes that are shown directly in the mode line."
   :group 'minions
   :type '(repeat (symbol :tag "Mode")))
@@ -153,7 +160,7 @@ mouse-3: Toggle minor modes"
                       'mouse-face 'mode-line-highlight
                       'local-map (make-mode-line-mouse-map
                                   'mouse-2 #'mode-line-widen))
-          `(:propertize ("" (:eval (minions--modes-direct)))
+          `(:propertize ("" (:eval (minions--prominent-modes)))
                         mouse-face mode-line-highlight
                         help-echo "Minor mode
 mouse-1: Display minor mode menu
@@ -182,10 +189,11 @@ minor modes in a space conserving menu.")
   "Pop up a menu with minor mode menus and toggles.
 
 The menu has an entry for every enabled minor mode, except those
-that are listed in `minions-blacklist'.  It also has entries for
-modes that are not enabled but listed in `minions-whitelist'.
-If a mode defines a menu, then its entry shows that as a submenu.
-Otherwise the entry can only be used to toggle the mode."
+listed in `minions-hidden-modes' or `minions-prominent-modes',
+and for modes listed in `minions-available-modes', even if they
+are not enabled.  If a mode defines a menu, then its entry shows
+that as a submenu.  Otherwise the entry can only be used to
+toggle the mode."
   (interactive)
   (pcase-let ((map (make-sparse-keymap))
               (`(,local ,global) (minions--modes)))
@@ -212,9 +220,9 @@ Otherwise the entry can only be used to toggle the mode."
         (popup-menu map)
       (quit nil))))
 
-(defun minions--modes-direct ()
+(defun minions--prominent-modes ()
   (cl-remove-if-not (lambda (mode)
-                      (memq (car mode) minions-direct))
+                      (memq (car mode) minions-prominent-modes))
                     minor-mode-alist))
 
 (defun minions--modes ()
@@ -228,10 +236,10 @@ Otherwise the entry can only be used to toggle the mode."
                              (cl-mapcan (pcase-lambda (`(,mode ,_))
                                           (and (boundp mode)
                                                (list mode)))
-                                        minions-whitelist))
-                   minions-blacklist))
+                                        minions-available-modes))
+                   minions-hidden-modes))
       (if (or (local-variable-if-set-p mode)
-              (let ((elt (assq mode minions-whitelist)))
+              (let ((elt (assq mode minions-available-modes)))
                 (and elt (not (cdr elt)))))
           (push mode local)
         (push mode global)))
