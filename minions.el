@@ -148,13 +148,14 @@ minor-modes that is usually displayed directly in the mode line."
   (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
     (list (propertize "%[" 'help-echo recursive-edit-help-echo)
           '(:eval (car minions-mode-line-delimiters))
-          `(:propertize ("" mode-name)
-                        help-echo "Major mode
+          '(:eval (propertize mode-name
+                              'help-echo "Major mode
 mouse-1: Display major mode menu
 mouse-2: Show help for major mode
 mouse-3: Toggle minor modes"
-                        mouse-face mode-line-highlight
-                        local-map ,mode-line-major-mode-keymap)
+                              'face minions-mode-line-face
+                              'mouse-face 'mode-line-highlight
+                              'local-map mode-line-major-mode-keymap))
           '("" mode-line-process)
           (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
                       'mouse-face 'mode-line-highlight
