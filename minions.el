@@ -1,6 +1,6 @@
 ;;; minions.el --- A minor-mode menu for the mode line  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2018-2021  Jonas Bernoulli
+;; Copyright (C) 2018-2022  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/minions
@@ -197,25 +197,25 @@ toggle the mode."
   (interactive)
   (pcase-let ((map (make-sparse-keymap))
               (`(,local ,global) (minions--modes)))
-    (define-key map [minions--help-menu]
-      (list 'menu-item "Describe..." (minions--help-menu)))
-    (define-key map [describe-mode]
-      (list 'menu-item "Describe modes" 'describe-mode))
-    (define-key map [--help]  (list 'menu-item "Help"))
-    (define-key map [--line1] (list 'menu-item "--double-line"))
-    (dolist (mode global)
-      (if-let (menu (and (symbol-value mode)
-                         (minions--mode-menu mode)))
-          (define-key map (vector mode) menu)
-        (minions--define-toggle map mode)))
-    (define-key map [--global] (list 'menu-item "Global Modes"))
-    (define-key map [--line2]  (list 'menu-item "--double-line"))
+    (define-key-after map [--local] (list 'menu-item "Local Modes"))
     (dolist (mode local)
       (if-let (menu (and (symbol-value mode)
                          (minions--mode-menu mode)))
-          (define-key map (vector mode) menu)
+          (define-key-after map (vector mode) menu)
         (minions--define-toggle map mode)))
-    (define-key map [--local] (list 'menu-item "Local Modes"))
+    (define-key-after map [--line2]  (list 'menu-item "--double-line"))
+    (define-key-after map [--global] (list 'menu-item "Global Modes"))
+    (dolist (mode global)
+      (if-let (menu (and (symbol-value mode)
+                         (minions--mode-menu mode)))
+          (define-key-after map (vector mode) menu)
+        (minions--define-toggle map mode)))
+    (define-key-after map [--line1] (list 'menu-item "--double-line"))
+    (define-key-after map [--help]  (list 'menu-item "Help"))
+    (define-key-after map [describe-mode]
+      (list 'menu-item "Describe modes" 'describe-mode))
+    (define-key-after map [minions--help-menu]
+      (list 'menu-item "Describe..." (minions--help-menu)))
     (condition-case nil
         (popup-menu map)
       (quit nil))))
@@ -243,8 +243,8 @@ toggle the mode."
                 (and elt (not (cdr elt)))))
           (push mode local)
         (push mode global)))
-    (list (sort local  #'string>)
-          (sort global #'string>))))
+    (list (sort local  #'string<)
+          (sort global #'string<))))
 
 (defun minions--mode-menu (mode)
   (let* ((map  (or (cdr (assq mode minor-mode-map-alist))
@@ -256,14 +256,14 @@ toggle the mode."
     (and menu
          (let ((wrap (make-sparse-keymap)))
            (set-keymap-parent wrap menu)
-           (define-key wrap [minions] (list 'menu-item "--double-line"))
            (minions--define-toggle wrap mode)
+           (define-key-after wrap [minions] (list 'menu-item "--double-line"))
            (list 'menu-item (symbol-name mode) wrap)))))
 
 (defun minions--define-toggle (map mode)
   (let ((fn (or (get mode :minor-mode-function) mode)))
     (when (functionp fn)
-      (define-key map (vector mode)
+      (define-key-after map (vector mode)
         (list 'menu-item (symbol-name mode) fn
               :help (minions--documentation fn)
               :button (cons :toggle mode))))))
@@ -271,19 +271,19 @@ toggle the mode."
 (defun minions--help-menu ()
   (pcase-let ((map (make-sparse-keymap))
               (`(,local ,global) (minions--modes)))
-    (dolist (mode global)
-      (minions--define-help map mode))
-    (define-key map [--global] (list 'menu-item "Global Modes"))
-    (define-key map [--line2]  (list 'menu-item "--double-line"))
+    (define-key-after map [--local] (list 'menu-item "Local Modes"))
     (dolist (mode local)
       (minions--define-help map mode))
-    (define-key map [--local] (list 'menu-item "Local Modes"))
+    (define-key-after map [--line2]  (list 'menu-item "--double-line"))
+    (define-key-after map [--global] (list 'menu-item "Global Modes"))
+    (dolist (mode global)
+      (minions--define-help map mode))
     map))
 
 (defun minions--define-help (map mode)
   (let ((fn (or (get mode :minor-mode-function) mode)))
     (when (functionp fn)
-      (define-key map (vector mode)
+      (define-key-after map (vector mode)
         (list 'menu-item
               (symbol-name mode)
               (lambda ()
