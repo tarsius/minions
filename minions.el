@@ -141,7 +141,7 @@ minor-modes that is usually displayed directly in the mode line."
 
 (defvar minions-mode-line-minor-modes-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [mode-line down-mouse-1] 'minions-minor-modes-menu)
+    (define-key map [mode-line down-mouse-1] #'minions-minor-modes-menu)
     map))
 
 (defvar minions-mode-line-modes
