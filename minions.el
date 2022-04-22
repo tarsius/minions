@@ -42,8 +42,7 @@
 (require 'cl-lib)
 (require 'compat)
 
-(eval-when-compile
-  (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
 (define-obsolete-variable-alias 'minions-blacklist
   'minions-hidden-modes "Minions 0.3.7")
