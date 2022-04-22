@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/minions
 
-;; Package-Requires: ((emacs "25.2"))
+;; Package-Requires: ((emacs "25.2") (compat "28.1.1.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -41,6 +41,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'compat)
 
 (eval-when-compile
   (require 'subr-x))
