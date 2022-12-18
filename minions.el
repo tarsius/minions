@@ -166,7 +166,7 @@ mouse-1: Display minor mode menu
 mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes"
                         local-map ,mode-line-minor-mode-keymap)
-          " "
+          '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
           '(:eval (propertize minions-mode-line-lighter
                               'face minions-mode-line-face
                               'mouse-face 'mode-line-highlight
