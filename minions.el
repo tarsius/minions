@@ -44,13 +44,6 @@
 
 (eval-when-compile (require 'subr-x))
 
-(define-obsolete-variable-alias 'minions-blacklist
-  'minions-hidden-modes "Minions 0.3.7")
-(define-obsolete-variable-alias 'minions-whitelist
-  'minions-available-modes "Minions 0.3.7")
-(define-obsolete-variable-alias 'minions-direct
-  'minions-prominent-modes "Minions 0.3.7")
-
 ;;; Options
 
 (defgroup minions nil
