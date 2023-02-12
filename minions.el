@@ -131,10 +131,8 @@ minor-modes that is usually displayed directly in the mode line."
 
 ;;; Menu
 
-(defvar minions-mode-line-minor-modes-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map [mode-line down-mouse-1] #'minions-minor-modes-menu)
-    map))
+(defvar-keymap minions-mode-line-minor-modes-map
+  "<mode-line> <down-mouse-1>" #'minions-minor-modes-menu)
 
 (defvar minions-mode-line-modes
   (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
