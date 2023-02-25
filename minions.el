@@ -127,7 +127,7 @@ minor-modes that is usually displayed directly in the mode line."
                               :test #'equal))
     (cl-nsubst 'mode-line-modes
                'minions-mode-line-modes
-               mode-line-format)))
+               (default-value 'mode-line-format))))
 
 ;;; Menu
 
