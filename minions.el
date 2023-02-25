@@ -44,44 +44,32 @@
 
 (eval-when-compile (require 'subr-x))
 
+(make-obsolete-variable 'minions-available-modes 'minions-promoted-modes
+                        "Minions 0.4.0")
+(define-obsolete-variable-alias 'minions-hidden-modes 'minions-demoted-modes
+  "Minions 0.4.0")
+
 ;;; Options
 
 (defgroup minions nil
   "A minor-mode menu for the mode line."
   :group 'mode-line)
 
-(defcustom minions-hidden-modes nil
-  "List of minor-modes that are never shown in the mode menu.
-
-These modes are not even displayed when they are enabled."
+(defcustom minions-demoted-modes nil
+  "List of minor modes that are shown in a sub-menu even when enabled."
   :group 'minions
-  :type '(repeat (symbol :tag "Mode")))
+  :type '(repeat (symbol :tag "Minor mode function")))
 
-(defcustom minions-available-modes
-  ;; Based on elements of `mode-line-mode-menu'.
-  '((abbrev-mode . nil)
-    (auto-fill-mode . nil)
-    (auto-revert-mode . nil)
-    (auto-revert-tail-mode . nil)
-    (flyspell-mode . nil)
-    (font-lock-mode . nil)
-    (glasses-mode . nil)
-    (hide-ifdef-mode . nil)
-    (highlight-changes-mode . nil)
-    (outline-minor-mode . nil)
-    (overwrite-mode . nil)
-    (ruler-mode . nil))
-  "List of minor-modes that are always shown in the mode menu.
-
-These modes are displayed even when they are not enabled,
-provided they are at least autoloaded.  Elements have the
-form (MODE . SCOPE), where SCOPE should be t if MODE is a
-global minor-mode, nil otherwise."
+(defcustom minions-promoted-modes
+  (nconc
+   ;; This returns all the bindings added in "bindings.el".
+   (delq nil (mapcar #'car-safe mode-line-mode-menu))
+   ;; This is the only binding that is only added once the
+   ;; respective library is loaded.
+   '(ruler-mode))
+  "List of minor modes that are shown in the top-menu even when disabled."
   :group 'minions
-  :type '(repeat (cons (symbol  :tag "Mode")
-                       (boolean :tag "Scope"
-                                :on "global (non-nil)"
-                                :off "local (nil)"))))
+  :type '(repeat (symbol :tag "Minor mode function")))
 
 (defcustom minions-prominent-modes nil
   "List of minor modes that are also shown directly in the mode line."
@@ -179,8 +167,8 @@ minor modes in a space conserving menu.")
   "Pop up a menu with minor mode menus and toggles.
 
 The menu has an entry for every enabled minor mode, except those
-listed in `minions-hidden-modes', and for modes listed in
-`minions-available-modes', even if they are not enabled.  If a
+listed in `minions-demoted-modes', and for modes listed in
+`minions-promoted-modes', even if they are not enabled.  If a
 mode defines a menu, then its entry shows that as a submenu.
 Otherwise the entry can only be used to toggle the mode."
   (interactive)
