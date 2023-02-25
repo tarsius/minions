@@ -199,8 +199,8 @@ Otherwise the entry can only be used to toggle the mode."
 
 (defun minions--prominent-modes ()
   (cl-remove-if-not (lambda (mode)
-                      (memq (car mode) minions-prominent-modes))
-                    minor-mode-alist))
+                      (memq mode minions-prominent-modes))
+                    minor-mode-list))
 
 (defun minions--modes ()
   (let (local global)
