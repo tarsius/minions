@@ -84,9 +84,9 @@ global minor-mode, nil otherwise."
                                 :off "local (nil)"))))
 
 (defcustom minions-prominent-modes nil
-  "List of minor-modes that are shown directly in the mode line."
+  "List of minor modes that are also shown directly in the mode line."
   :group 'minions
-  :type '(repeat (symbol :tag "Mode")))
+  :type '(repeat (symbol :tag "Minor mode function")))
 
 (defcustom minions-mode-line-face nil
   "Face used for the mode menu in the mode line."
@@ -179,11 +179,10 @@ minor modes in a space conserving menu.")
   "Pop up a menu with minor mode menus and toggles.
 
 The menu has an entry for every enabled minor mode, except those
-listed in `minions-hidden-modes' or `minions-prominent-modes',
-and for modes listed in `minions-available-modes', even if they
-are not enabled.  If a mode defines a menu, then its entry shows
-that as a submenu.  Otherwise the entry can only be used to
-toggle the mode."
+listed in `minions-hidden-modes', and for modes listed in
+`minions-available-modes', even if they are not enabled.  If a
+mode defines a menu, then its entry shows that as a submenu.
+Otherwise the entry can only be used to toggle the mode."
   (interactive)
   (pcase-let ((map (make-sparse-keymap))
               (`(,local ,global) (minions--modes)))
