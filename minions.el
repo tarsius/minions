@@ -104,7 +104,7 @@
   "Display a minor-mode menu in the mode line.
 
 This replaces the likely incomplete and possibly cut off list of
-minor-modes that is usually displayed directly in the mode line."
+minor modes that is usually displayed directly in the mode line."
   :group 'minions
   :global t
   (if minions-mode
@@ -268,8 +268,8 @@ Otherwise the entry can only be used to toggle the mode."
                 (describe-minor-mode-from-symbol fn))
               :help (minions--documentation mode))))))
 
-(defun minions--documentation (function)
-  (let ((doc (documentation function t)))
+(defun minions--documentation (fn)
+  (let ((doc (documentation fn t)))
     (and doc
          (string-match "\\`.+" doc)
          (match-string 0 doc))))
