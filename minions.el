@@ -206,6 +206,9 @@ are enabled."
     (define-key-after gtop [--gend] (list 'menu-item "--double-line"))
     (define-key-after tail [describe-mode]
       (list 'menu-item "Describe active modes" 'describe-mode))
+    (define-key-after tail [--customize]
+      (list 'menu-item "Customize this menu"
+            (lambda () (interactive) (customize-group 'minions))))
     (condition-case nil
         (popup-menu (make-composed-keymap (list ltop gtop tail)))
       (quit nil))))
