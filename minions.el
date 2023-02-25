@@ -25,14 +25,13 @@
 
 ;;; Commentary:
 
-;; This package implements a menu that lists enabled minor-modes, as
-;; well as commonly but not currently enabled minor-modes.  It can be
-;; used to toggle local and global minor-modes, to access mode-specific
-;; menus, and to get help about modes.
+;; This package implements a nested menu that gives access to all minor
+;; modes.  It can be used to toggle local and global minor modes, to
+;; access mode-specific menus, and to display information about modes.
 
-;; This menu is intended as a replacement for the incomplete yet wide
-;; list of enabled minor-modes that is displayed in the mode line by
-;; default.  To use the menu like this, enable Minions mode.
+;; This menu is intended as a replacement for the incomplete, yet quite
+;; space consuming, list of enabled minor modes that is displayed in the
+;; mode line by default.  To use the menu like this, enable Minions mode.
 
 ;; Alternatively the menu can be bound globally, for example:
 ;;   (global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)
@@ -166,35 +165,49 @@ minor modes in a space conserving menu.")
 (defun minions-minor-modes-menu ()
   "Pop up a menu with minor mode menus and toggles.
 
-The menu has an entry for every enabled minor mode, except those
-listed in `minions-demoted-modes', and for modes listed in
-`minions-promoted-modes', even if they are not enabled.  If a
-mode defines a menu, then its entry shows that as a submenu.
-Otherwise the entry can only be used to toggle the mode."
+Enabled local modes are displayed at the top of the root menu,
+while enabled global modes are displayed at its the bottom.
+Two sub-menus are used to display the disabled local and global
+modes.
+
+Modes listed in `minions-promoted-modes' are displayed in the
+root menu even if they are disabled.  Likewise modes listed in
+`minions-demoted-modes' are displayed in a sub menu even if they
+are enabled."
   (interactive)
-  (pcase-let ((map (make-sparse-keymap))
-              (`(,local ,global) (minions--modes)))
-    (define-key-after map [--local] (list 'menu-item "Local Modes"))
-    (dolist (mode local)
-      (if-let (menu (and (symbol-value mode)
-                         (minions--mode-menu mode)))
-          (define-key-after map (vector mode) menu)
-        (minions--define-toggle map mode)))
-    (define-key-after map [--line2]  (list 'menu-item "--double-line"))
-    (define-key-after map [--global] (list 'menu-item "Global Modes"))
-    (dolist (mode global)
-      (if-let (menu (and (symbol-value mode)
-                         (minions--mode-menu mode)))
-          (define-key-after map (vector mode) menu)
-        (minions--define-toggle map mode)))
-    (define-key-after map [--line1] (list 'menu-item "--double-line"))
-    (define-key-after map [--help]  (list 'menu-item "Help"))
-    (define-key-after map [describe-mode]
-      (list 'menu-item "Describe modes" 'describe-mode))
-    (define-key-after map [minions--help-menu]
-      (list 'menu-item "Describe..." (minions--help-menu)))
+  (let ((ltop (make-sparse-keymap))
+        (gtop (make-sparse-keymap))
+        (tail (make-sparse-keymap))
+        (lsub (make-sparse-keymap))
+        (gsub (make-sparse-keymap))
+        (ldoc (make-sparse-keymap))
+        (gdoc (make-sparse-keymap)))
+    (define-key ltop [--local]  (list 'menu-item "Local Modes"))
+    (define-key gtop [--global] (list 'menu-item "Global Modes"))
+    (pcase-dolist (`(,fn ,var ,global ,top) (minions--modes))
+      (define-key-after
+        (pcase (list top global)
+          (`(t   t)   gtop)
+          (`(t   nil) ltop)
+          (`(nil t)   gsub)
+          (`(nil nil) lsub))
+        (vector fn)
+        (or (minions--mode-menu fn var)
+            (minions--mode-item fn var)))
+      (define-key-after
+        (if global gdoc ldoc)
+        (vector fn)
+        (minions--help-item fn)))
+    (define-key-after ltop [--lsub] (list 'menu-item "more..." lsub))
+    (define-key-after ltop [--ldoc] (list 'menu-item "describe..." ldoc))
+    (define-key-after ltop [--lend] (list 'menu-item "--double-line"))
+    (define-key-after gtop [--gsub] (list 'menu-item "more..." gsub))
+    (define-key-after gtop [--gdoc] (list 'menu-item "describe..." gdoc))
+    (define-key-after gtop [--gend] (list 'menu-item "--double-line"))
+    (define-key-after tail [describe-mode]
+      (list 'menu-item "Describe active modes" 'describe-mode))
     (condition-case nil
-        (popup-menu map)
+        (popup-menu (make-composed-keymap (list ltop gtop tail)))
       (quit nil))))
 
 (defun minions--prominent-modes ()
@@ -203,70 +216,64 @@ Otherwise the entry can only be used to toggle the mode."
                     minor-mode-list))
 
 (defun minions--modes ()
-  (let (local global)
-    (dolist (mode (cl-set-difference
-                   (cl-union (cl-mapcan (pcase-lambda (`(,mode ,_))
-                                          (and (boundp mode)
-                                               (symbol-value mode)
-                                               (list mode)))
-                                        minor-mode-alist)
-                             (cl-mapcan (pcase-lambda (`(,mode ,_))
-                                          (and (boundp mode)
-                                               (list mode)))
-                                        minions-available-modes))
-                   minions-hidden-modes))
-      (if (or (local-variable-if-set-p mode)
-              (let ((elt (assq mode minions-available-modes)))
-                (and elt (not (cdr elt)))))
-          (push mode local)
-        (push mode global)))
-    (list (sort local  #'string<)
-          (sort global #'string<))))
+  (cl-mapcan
+   (lambda (fn)
+     (let ((var (and (boundp fn) fn))
+           (ignore nil))
+       (cl-case fn
+         ;; Built-in:
+         (auto-fill-function (setq ignore t))
+         (auto-fill-mode (setq var 'auto-fill-function))
+         (auto-save-mode (setq var 'buffer-auto-save-file-name))
+         (buffer-read-only (setq fn 'read-only-mode))
+         ;; Third-party:
+         (edit-indirect--overlay (setq ignore t)))
+       (and (not ignore)
+            (fboundp fn)
+            (let (global enabled)
+              (cond
+               ((and (boundp 'global-minor-modes)
+                     (memq fn global-minor-modes))
+                (setq global t)
+                (setq enabled t))
+               ((and (boundp 'local-minor-modes)
+                     (memq fn local-minor-modes))
+                (setq enabled t))
+               ((or (get fn 'globalized-minor-mode)
+                    (and var (not (local-variable-if-set-p var)))
+                    (string-prefix-p "global-" (symbol-name fn)))
+                (setq global t)
+                (setq enabled (and var (symbol-value var))))
+               ((setq enabled (and var (symbol-value var)))))
+              (list (list fn var global
+                          (and (not (memq fn minions-demoted-modes))
+                               (and (or enabled
+                                        (memq fn minions-promoted-modes))
+                                    t))))))))
+   (sort minor-mode-list #'string<)))
 
-(defun minions--mode-menu (mode)
-  (let* ((map  (or (cdr (assq mode minor-mode-map-alist))
-                   (cdr (assq mode minor-mode-overriding-map-alist))))
-         (menu (and (keymapp map)
-                    (lookup-key map [menu-bar])))
-         (menu (and menu
-                    (mouse-menu-non-singleton menu))))
-    (and menu
-         (let ((wrap (make-sparse-keymap)))
-           (set-keymap-parent wrap menu)
-           (minions--define-toggle wrap mode)
-           (define-key-after wrap [minions] (list 'menu-item "--double-line"))
-           (list 'menu-item (symbol-name mode) wrap)))))
+(defun minions--mode-menu (fn var)
+  (and-let* ((menu (or (cdr (assq fn minor-mode-map-alist))
+                       (cdr (assq fn minor-mode-overriding-map-alist))))
+             (menu (and (keymapp menu)
+                        (lookup-key menu [menu-bar])))
+             (menu (mouse-menu-non-singleton menu))
+             (map  (make-sparse-keymap)))
+    (define-key-after map (vector fn) (minions--mode-item fn var))
+    (define-key-after map [--builtin] (list 'menu-item "--double-line"))
+    (list 'menu-item (symbol-name fn) (make-composed-keymap map menu))))
 
-(defun minions--define-toggle (map mode)
-  (let ((fn (or (get mode :minor-mode-function) mode)))
-    (when (functionp fn)
-      (define-key-after map (vector mode)
-        (list 'menu-item (symbol-name mode) fn
-              :help (minions--documentation fn)
-              :button (cons :toggle mode))))))
+(defun minions--mode-item (fn var)
+  (list 'menu-item (symbol-name fn) fn
+        :help (minions--documentation fn)
+        :button (cons :toggle var)))
 
-(defun minions--help-menu ()
-  (pcase-let ((map (make-sparse-keymap))
-              (`(,local ,global) (minions--modes)))
-    (define-key-after map [--local] (list 'menu-item "Local Modes"))
-    (dolist (mode local)
-      (minions--define-help map mode))
-    (define-key-after map [--line2]  (list 'menu-item "--double-line"))
-    (define-key-after map [--global] (list 'menu-item "Global Modes"))
-    (dolist (mode global)
-      (minions--define-help map mode))
-    map))
-
-(defun minions--define-help (map mode)
-  (let ((fn (or (get mode :minor-mode-function) mode)))
-    (when (functionp fn)
-      (define-key-after map (vector mode)
-        (list 'menu-item
-              (symbol-name mode)
-              (lambda ()
-                (interactive)
-                (describe-minor-mode-from-symbol fn))
-              :help (minions--documentation mode))))))
+(defun minions--help-item (fn)
+  (list 'menu-item (symbol-name fn)
+        (lambda ()
+          (interactive)
+          (describe-minor-mode-from-symbol fn))
+        :help (minions--documentation fn)))
 
 (defun minions--documentation (fn)
   (let ((doc (documentation fn t)))
