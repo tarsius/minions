@@ -215,8 +215,8 @@ are enabled."
 
 (defun minions--prominent-modes ()
   (cl-remove-if-not (lambda (mode)
-                      (memq mode minions-prominent-modes))
-                    minor-mode-list))
+                      (memq (car mode) minions-prominent-modes))
+                    minor-mode-alist))
 
 (defun minions--modes ()
   (cl-mapcan
