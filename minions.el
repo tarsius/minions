@@ -91,7 +91,7 @@
   :group 'mode-line-faces
   :type '(choice (const :tag "No face" nil) face))
 
-(defcustom minions-mode-line-lighter ";-"
+(defcustom minions-mode-line-lighter "≡"
   "Text used for the mode menu in the mode line."
   :package-version '(minions . "0.2.0")
   :group 'minions
