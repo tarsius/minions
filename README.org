@@ -24,8 +24,6 @@ must be autoloaded.  For example:
      (cl-pushnew 'glasses-mode minor-mode-list))
 #+end_src
 
-[[http://readme.emacsair.me/minions.png]]
-
 Compatibility information can be found [[https://github.com/tarsius/minions/wiki][here]].
 
 #+html: <br><br>
