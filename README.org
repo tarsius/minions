@@ -12,7 +12,7 @@ mode line by default.  To use the menu like this, enable Minions mode.
 Alternatively the menu can be bound globally, for example:
 
 #+begin_src emacs-lisp
-  (global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)
+  (keymap-global-set "<S-down-mouse-3>" #'minions-minor-modes-menu)
 #+end_src
 
 To list a mode even though the defining library has not been loaded
