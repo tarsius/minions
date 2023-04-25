@@ -115,15 +115,15 @@ This replaces the likely incomplete and possibly cut off list of
 minor modes that is usually displayed directly in the mode line."
   :group 'minions
   :global t
-  (if minions-mode
-      (setq-default mode-line-format
+  (setq-default mode-line-format
+                (if minions-mode
                     (cl-subst 'minions-mode-line-modes
                               'mode-line-modes
                               (default-value 'mode-line-format)
-                              :test #'equal))
-    (cl-nsubst 'mode-line-modes
-               'minions-mode-line-modes
-               (default-value 'mode-line-format))))
+                              :test #'equal)
+                  (cl-nsubst 'mode-line-modes
+                             'minions-mode-line-modes
+                             (default-value 'mode-line-format)))))
 
 ;;; Menu
 
