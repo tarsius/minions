@@ -119,8 +119,7 @@ minor modes that is usually displayed directly in the mode line."
                 (if minions-mode
                     (cl-subst 'minions-mode-line-modes
                               'mode-line-modes
-                              (default-value 'mode-line-format)
-                              :test #'equal)
+                              (default-value 'mode-line-format))
                   (cl-nsubst 'mode-line-modes
                              'minions-mode-line-modes
                              (default-value 'mode-line-format)))))
