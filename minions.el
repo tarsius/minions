@@ -228,7 +228,7 @@ are enabled."
                     minor-mode-alist))
 
 (defun minions--modes ()
-  (cl-mapcan
+  (mapcan
    (lambda (fn)
      (let ((var (and (boundp fn) fn))
            (ignore nil))
