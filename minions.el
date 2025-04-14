@@ -286,7 +286,6 @@ of) the enable minor modes directly in the mode line, list all
 minor modes in a space conserving menu.")
 
 (put 'minions-mode-line-modes 'risky-local-variable t)
-(make-variable-buffer-local 'minions-mode-line-modes)
 
 ;;; Banana!
 (provide 'minions)
