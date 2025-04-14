@@ -125,47 +125,6 @@ minor modes that is usually displayed directly in the mode line."
 (defvar-keymap minions-mode-line-minor-modes-map
   "<mode-line> <down-mouse-1>" #'minions-minor-modes-menu)
 
-(defvar minions-mode-line-modes
-  (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
-    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-          '(:eval (car minions-mode-line-delimiters))
-          `(:propertize ("" mode-name)
-                        help-echo "Major mode
-mouse-1: Display major mode menu
-mouse-2: Show help for major mode
-mouse-3: Toggle minor modes"
-                        mouse-face mode-line-highlight
-                        local-map ,mode-line-major-mode-keymap)
-          '("" mode-line-process)
-          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
-                      'mouse-face 'mode-line-highlight
-                      'local-map (make-mode-line-mouse-map
-                                  'mouse-2 #'mode-line-widen))
-          `(:propertize ("" (:eval (minions--prominent-modes)))
-                        mouse-face mode-line-highlight
-                        help-echo "Minor mode
-mouse-1: Display minor mode menu
-mouse-2: Show help for minor mode
-mouse-3: Toggle minor modes"
-                        local-map ,mode-line-minor-mode-keymap)
-          '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
-          '(:eval (propertize minions-mode-line-lighter
-                              'face minions-mode-line-face
-                              'mouse-face 'mode-line-highlight
-                              'help-echo "Minions
-mouse-1: Display minor modes menu"
-                              'local-map minions-mode-line-minor-modes-map))
-          '(:eval (cdr minions-mode-line-delimiters))
-          (propertize "%]" 'help-echo recursive-edit-help-echo)
-          " "))
-  "Alternative mode line construct for displaying major and minor modes.
-Similar to `mode-line-modes' but instead of showing (a subset
-of) the enable minor modes directly in the mode line, list all
-minor modes in a space conserving menu.")
-
-(put 'minions-mode-line-modes 'risky-local-variable t)
-(make-variable-buffer-local 'minions-mode-line-modes)
-
 (defun minions-minor-modes-menu ()
   "Pop up a menu with minor mode menus and toggles.
 
@@ -287,6 +246,47 @@ are enabled."
     (and doc
          (string-match "\\`.+" doc)
          (match-string 0 doc))))
+
+(defvar minions-mode-line-modes
+  (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
+    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
+          '(:eval (car minions-mode-line-delimiters))
+          `(:propertize ("" mode-name)
+                        help-echo "Major mode
+mouse-1: Display major mode menu
+mouse-2: Show help for major mode
+mouse-3: Toggle minor modes"
+                        mouse-face mode-line-highlight
+                        local-map ,mode-line-major-mode-keymap)
+          '("" mode-line-process)
+          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
+                      'mouse-face 'mode-line-highlight
+                      'local-map (make-mode-line-mouse-map
+                                  'mouse-2 #'mode-line-widen))
+          `(:propertize ("" (:eval (minions--prominent-modes)))
+                        mouse-face mode-line-highlight
+                        help-echo "Minor mode
+mouse-1: Display minor mode menu
+mouse-2: Show help for minor mode
+mouse-3: Toggle minor modes"
+                        local-map ,mode-line-minor-mode-keymap)
+          '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
+          '(:eval (propertize minions-mode-line-lighter
+                              'face minions-mode-line-face
+                              'mouse-face 'mode-line-highlight
+                              'help-echo "Minions
+mouse-1: Display minor modes menu"
+                              'local-map minions-mode-line-minor-modes-map))
+          '(:eval (cdr minions-mode-line-delimiters))
+          (propertize "%]" 'help-echo recursive-edit-help-echo)
+          " "))
+  "Alternative mode line construct for displaying major and minor modes.
+Similar to `mode-line-modes' but instead of showing (a subset
+of) the enable minor modes directly in the mode line, list all
+minor modes in a space conserving menu.")
+
+(put 'minions-mode-line-modes 'risky-local-variable t)
+(make-variable-buffer-local 'minions-mode-line-modes)
 
 ;;; Banana!
 (provide 'minions)
