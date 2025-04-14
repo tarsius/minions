@@ -53,11 +53,6 @@
 
 (eval-when-compile (require 'subr-x))
 
-(make-obsolete-variable 'minions-available-modes 'minions-promoted-modes
-                        "Minions 0.4.0")
-(define-obsolete-variable-alias 'minions-hidden-modes 'minions-demoted-modes
-  "Minions 0.4.0")
-
 ;;; Options
 
 (defgroup minions nil
