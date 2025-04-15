@@ -35,7 +35,16 @@
 ;; space consuming, list of enabled minor modes that is displayed in the
 ;; mode line by default.  To use the menu like this, enable Minions mode.
 
-;; Alternatively the menu can be bound globally, for example:
+;; Emacs 31 adds support for putting minor-modes in a menu instead of
+;; directly in the mode-line, but that menu is less featureful than the
+;; menu provided by this package.  The built-in menu doesn't list global
+;; modes and because it only lists modes that are already enabled, it
+;; cannot be used to enable additional modes.  It also only lists modes
+;; that define a mode line lighter, so it does not present a complete
+;; list of enabled minor modes.
+
+;; Instead of, or in addition to, making the Minions menu available in
+;; the mode line, it can be bound globally, for example:
 ;;
 ;;   (global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)
 
@@ -45,6 +54,10 @@
 ;;
 ;;   (when (autoloadp (symbol-function 'glasses-mode))
 ;;     (cl-pushnew 'glasses-mode minor-mode-list))
+
+;; To avoid inserting parenthesis around the modes in the mode-line, set
+;; `mode-line-modes-delimiters' (or `minions-mode-line-delimiters' if you
+;; are using Emacs 30 or older) to nil.
 
 ;;; Code:
 
@@ -93,13 +106,14 @@
   :group 'minions
   :type 'string)
 
-(defcustom minions-mode-line-delimiters '("(" . ")")
-  "Strings placed around mode elements in the mode line."
-  :package-version '(minions . "0.3.1")
-  :group 'minions
-  :type '(choice (const :tag "No delimiters")
-                 (cons (string :tag "Before string")
-                       (string :tag "After string"))))
+;;; Element
+
+(defvar minions--mode-line-minor-modes
+  '(:eval (propertize minions-mode-line-lighter
+                      'face minions-mode-line-face
+                      'mouse-face 'mode-line-highlight
+                      'help-echo "Minions\nmouse-1: Display minor modes menu"
+                      'local-map minions-mode-line-minor-modes-map)))
 
 ;;; Mode
 
@@ -111,14 +125,19 @@ This replaces the likely incomplete and possibly cut off list of
 minor modes that is usually displayed directly in the mode line."
   :group 'minions
   :global t
-  (setq-default mode-line-format
-                (if minions-mode
-                    (cl-subst 'minions-mode-line-modes
-                              'mode-line-modes
-                              (default-value 'mode-line-format))
-                  (cl-nsubst 'mode-line-modes
-                             'minions-mode-line-modes
-                             (default-value 'mode-line-format)))))
+  (static-if (boundp 'mode-line-minor-modes)
+      (setq-default mode-line-minor-modes
+                    (if minions-mode
+                        minions--mode-line-minor-modes
+                      '(:eval (mode-line--minor-modes))))
+    (setq-default mode-line-format
+                  (if minions-mode
+                      (cl-subst 'minions-mode-line-modes
+                                'mode-line-modes
+                                (default-value 'mode-line-format))
+                    (cl-nsubst 'mode-line-modes
+                               'minions-mode-line-modes
+                               (default-value 'mode-line-format))))))
 
 ;;; Menu
 
@@ -247,45 +266,54 @@ are enabled."
          (string-match "\\`.+" doc)
          (match-string 0 doc))))
 
-(defvar minions-mode-line-modes
-  (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
-    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-          '(:eval (car minions-mode-line-delimiters))
-          `(:propertize ("" mode-name)
-                        help-echo "Major mode
+;;; Backward Compatibility
+
+(static-if (boundp 'mode-line-modes-delimiters)
+    (define-obsolete-variable-alias 'minions-mode-line-delimiters
+      'mode-line-modes-delimiters "Minions 1.1.0")
+  (defcustom minions-mode-line-delimiters '("(" . ")")
+    "Strings placed around mode elements in the mode line."
+    :package-version '(minions . "0.3.1")
+    :group 'minions
+    :type '(choice (const :tag "No delimiters")
+                   (cons (string :tag "Before string")
+                         (string :tag "After string")))))
+
+(static-if (boundp 'mode-line-minor-modes)
+    nil
+  (put 'minions-mode-line-modes 'risky-local-variable t)
+  (defvar minions-mode-line-modes
+    (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
+      (list (propertize "%[" 'help-echo recursive-edit-help-echo)
+            '(:eval (car minions-mode-line-delimiters))
+            `(:propertize ("" mode-name)
+                          help-echo "Major mode
 mouse-1: Display major mode menu
 mouse-2: Show help for major mode
 mouse-3: Toggle minor modes"
-                        mouse-face mode-line-highlight
-                        local-map ,mode-line-major-mode-keymap)
-          '("" mode-line-process)
-          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
-                      'mouse-face 'mode-line-highlight
-                      'local-map (make-mode-line-mouse-map
-                                  'mouse-2 #'mode-line-widen))
-          `(:propertize ("" (:eval (minions--prominent-modes)))
-                        mouse-face mode-line-highlight
-                        help-echo "Minor mode
+                          mouse-face mode-line-highlight
+                          local-map ,mode-line-major-mode-keymap)
+            '("" mode-line-process)
+            (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
+                        'mouse-face 'mode-line-highlight
+                        'local-map (make-mode-line-mouse-map
+                                    'mouse-2 #'mode-line-widen))
+            `(:propertize ("" (:eval (minions--prominent-modes)))
+                          mouse-face mode-line-highlight
+                          help-echo "Minor mode
 mouse-1: Display minor mode menu
 mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes"
-                        local-map ,mode-line-minor-mode-keymap)
-          '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
-          '(:eval (propertize minions-mode-line-lighter
-                              'face minions-mode-line-face
-                              'mouse-face 'mode-line-highlight
-                              'help-echo "Minions
-mouse-1: Display minor modes menu"
-                              'local-map minions-mode-line-minor-modes-map))
-          '(:eval (cdr minions-mode-line-delimiters))
-          (propertize "%]" 'help-echo recursive-edit-help-echo)
-          " "))
-  "Alternative mode line construct for displaying major and minor modes.
+                          local-map ,mode-line-minor-mode-keymap)
+            '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
+            minions--mode-line-minor-modes
+            '(:eval (cdr minions-mode-line-delimiters))
+            (propertize "%]" 'help-echo recursive-edit-help-echo)
+            " "))
+    "Alternative mode line construct for displaying major and minor modes.
 Similar to `mode-line-modes' but instead of showing (a subset
 of) the enable minor modes directly in the mode line, list all
-minor modes in a space conserving menu.")
-
-(put 'minions-mode-line-modes 'risky-local-variable t)
+minor modes in a space conserving menu."))
 
 ;;; Banana!
 (provide 'minions)
