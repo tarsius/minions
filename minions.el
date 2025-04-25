@@ -72,8 +72,10 @@
   "A minor-mode menu for the mode line."
   :group 'mode-line)
 
-(defcustom minions-demoted-modes nil
-  "List of minor modes that are shown in a sub-menu even when enabled."
+(defcustom minions-demoted-modes '(all-global-modes)
+  "List of minor modes that are shown in a sub-menu even when enabled.
+The element `all-global-modes' causes all global minor modes to
+be placed in a sub-menu, even when enabled."
   :group 'minions
   :type '(repeat (symbol :tag "Minor mode function")))
 
@@ -183,8 +185,10 @@ are enabled."
     (define-key-after ltop [--lsub] (list 'menu-item "more..." lsub))
     (define-key-after ltop [--ldoc] (list 'menu-item "describe..." ldoc))
     (define-key-after ltop [--lend] (list 'menu-item "--double-line"))
-    (define-key-after gtop [--gsub] (list 'menu-item "more..." gsub))
-    (define-key-after gtop [--gdoc] (list 'menu-item "describe..." gdoc))
+    (define-key-after gtop [--gsub]
+      (list 'menu-item (if gdemote "toggle..." "more...") gsub))
+    (define-key-after gtop [--gdoc]
+      (list 'menu-item "describe..." (if gdemote gdocsub gdoc)))
     (define-key-after gtop [--gend] (list 'menu-item "--double-line"))
     (define-key-after tail [describe-mode]
       (list 'menu-item "Describe active modes" 'describe-mode))
@@ -232,6 +236,9 @@ are enabled."
                ((setq enabled (and var (symbol-value var)))))
               (list (list fn var global
                           (and (not (memq fn minions-demoted-modes))
+                               (not (and global
+                                         (memq 'all-global-modes
+                                               minions-demoted-modes)))
                                (and (or enabled
                                         (memq fn minions-promoted-modes))
                                     t))))))))
