@@ -164,8 +164,11 @@ are enabled."
         (tail (make-sparse-keymap))
         (lsub (make-sparse-keymap))
         (gsub (make-sparse-keymap))
-        (ldoc (make-sparse-keymap))
-        (gdoc (make-sparse-keymap)))
+        (ldoctop (make-sparse-keymap))
+        (gdoctop (make-sparse-keymap))
+        (ldocsub (make-sparse-keymap))
+        (gdocsub (make-sparse-keymap))
+        (gdemote (memq 'all-global-modes minions-demoted-modes)))
     (define-key ltop [--local]  (list 'menu-item "Local Modes"))
     (define-key gtop [--global] (list 'menu-item "Global Modes"))
     (pcase-dolist (`(,fn ,var ,global ,top) (minions--modes))
@@ -179,22 +182,28 @@ are enabled."
         (or (minions--mode-menu fn var)
             (minions--mode-item fn var)))
       (define-key-after
-        (if global gdoc ldoc)
+        (pcase (list top global)
+          (`(t   t)   gdoctop)
+          (`(t   nil) ldoctop)
+          (`(nil t)   gdocsub)
+          (`(nil nil) ldocsub))
         (vector fn)
         (minions--help-item fn)))
     (define-key-after ltop [--lsub] (list 'menu-item "more..." lsub))
-    (define-key-after ltop [--ldoc] (list 'menu-item "describe..." ldoc))
+    (define-key-after ltop [--ldoc] (list 'menu-item "describe..." ldoctop))
     (define-key-after ltop [--lend] (list 'menu-item "--double-line"))
     (define-key-after gtop [--gsub]
       (list 'menu-item (if gdemote "toggle..." "more...") gsub))
     (define-key-after gtop [--gdoc]
-      (list 'menu-item "describe..." (if gdemote gdocsub gdoc)))
+      (list 'menu-item "describe..." (if gdemote gdocsub gdoctop)))
     (define-key-after gtop [--gend] (list 'menu-item "--double-line"))
     (define-key-after tail [describe-mode]
       (list 'menu-item "Describe active modes" 'describe-mode))
     (define-key-after tail [--customize]
       (list 'menu-item "Customize this menu"
             (lambda () (interactive) (customize-group 'minions))))
+    (define-key-after ldoctop [--lsub] (list 'menu-item "more..." ldocsub))
+    (define-key-after gdoctop [--gsub] (list 'menu-item "more..." gdocsub))
     (condition-case nil
         (popup-menu (make-composed-keymap (list ltop gtop tail)))
       (quit nil))))
