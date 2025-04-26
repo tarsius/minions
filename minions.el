@@ -46,7 +46,7 @@
 ;; Instead of, or in addition to, making the Minions menu available in
 ;; the mode line, it can be bound globally, for example:
 ;;
-;;   (global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)
+;;   (keymap-global-set "<S-down-mouse-3>" #'minions-minor-modes-menu)
 
 ;; To list a mode even though the defining library has not been loaded
 ;; yet, you must add it to `minor-mode-list' yourself.  Additionally it
