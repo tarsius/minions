@@ -189,21 +189,21 @@ are enabled."
           (`(nil nil) ldocsub))
         (vector fn)
         (minions--help-item fn)))
-    (define-key-after ltop [--lsub] (list 'menu-item "more..." lsub))
-    (define-key-after ltop [--ldoc] (list 'menu-item "describe..." ldoctop))
+    (define-key-after ltop [--lsub] (list 'menu-item "More..." lsub))
+    (define-key-after ltop [--ldoc] (list 'menu-item "Describe..." ldoctop))
     (define-key-after ltop [--lend] (list 'menu-item "--double-line"))
     (define-key-after gtop [--gsub]
-      (list 'menu-item (if gdemote "toggle..." "more...") gsub))
+      (list 'menu-item (if gdemote "Toggle..." "More...") gsub))
     (define-key-after gtop [--gdoc]
-      (list 'menu-item "describe..." (if gdemote gdocsub gdoctop)))
+      (list 'menu-item "Describe..." (if gdemote gdocsub gdoctop)))
     (define-key-after gtop [--gend] (list 'menu-item "--double-line"))
     (define-key-after tail [describe-mode]
       (list 'menu-item "Describe active modes" 'describe-mode))
     (define-key-after tail [--customize]
       (list 'menu-item "Customize this menu"
             (lambda () (interactive) (customize-group 'minions))))
-    (define-key-after ldoctop [--lsub] (list 'menu-item "more..." ldocsub))
-    (define-key-after gdoctop [--gsub] (list 'menu-item "more..." gdocsub))
+    (define-key-after ldoctop [--lsub] (list 'menu-item "More..." ldocsub))
+    (define-key-after gdoctop [--gsub] (list 'menu-item "More..." gdocsub))
     (condition-case nil
         (popup-menu (make-composed-keymap (list ltop gtop tail)))
       (quit nil))))
