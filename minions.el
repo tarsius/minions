@@ -110,24 +110,6 @@ be placed in a sub-menu, even when enabled."
   :group 'minions
   :type 'string)
 
-;;; Element
-
-(defun minions--mode-line-minor-modes ()
-  `(""
-    (:propertize ("" ,(minions--prominent-modes))
-                 mouse-face mode-line-highlight
-                 local-map ,mode-line-minor-mode-keymap
-                 help-echo "Minor mode
-mouse-1: Display minor mode menu
-mouse-2: Show help for minor mode
-mouse-3: Toggle minor modes")
-    (:propertize minions-mode-line-lighter
-                 face minions-mode-line-face
-                 mouse-face mode-line-highlight
-                 local-map ,minions-mode-line-minor-modes-map
-                 help-echo "Minions
-mouse-1: Display minor modes menu")))
-
 ;;; Mode
 
 ;;;###autoload
@@ -292,6 +274,24 @@ are enabled."
     (and doc
          (string-match "\\`.+" doc)
          (match-string 0 doc))))
+
+;;; Element
+
+(defun minions--mode-line-minor-modes ()
+  `(""
+    (:propertize ("" ,(minions--prominent-modes))
+                 mouse-face mode-line-highlight
+                 local-map ,mode-line-minor-mode-keymap
+                 help-echo "Minor mode
+mouse-1: Display minor mode menu
+mouse-2: Show help for minor mode
+mouse-3: Toggle minor modes")
+    (:propertize minions-mode-line-lighter
+                 face minions-mode-line-face
+                 mouse-face mode-line-highlight
+                 local-map ,minions-mode-line-minor-modes-map
+                 help-echo "Minions
+mouse-1: Display minor modes menu")))
 
 ;;; Backward Compatibility
 
