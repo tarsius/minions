@@ -287,7 +287,7 @@ mouse-1: Display minor mode menu
 mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes")
     (:propertize minions-mode-line-lighter
-                 face minions-mode-line-face
+                 face ,minions-mode-line-face
                  mouse-face mode-line-highlight
                  local-map ,minions-mode-line-minor-modes-map
                  help-echo "Minions
