@@ -104,7 +104,7 @@ be placed in a sub-menu, even when enabled."
   :group 'mode-line-faces
   :type '(choice (const :tag "No face" nil) face))
 
-(defcustom minions-mode-line-lighter "≡"
+(defcustom minions-mode-line-lighter " ≡"
   "Text used for the mode menu in the mode line."
   :package-version '(minions . "0.2.0")
   :group 'minions
@@ -332,7 +332,6 @@ mouse-1: Display minor mode menu
 mouse-2: Show help for minor mode
 mouse-3: Toggle minor modes"
                           local-map ,mode-line-minor-mode-keymap)
-            '(:eval (and (not (member minions-mode-line-lighter '("" nil))) " "))
             '(:eval (minions--mode-line-minor-modes))
             '(:eval (cdr minions-mode-line-delimiters))
             (propertize "%]" 'help-echo recursive-edit-help-echo)
