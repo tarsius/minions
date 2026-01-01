@@ -223,19 +223,19 @@ are enabled."
             (fboundp fn)
             (let (global enabled)
               (cond
-               ((and (boundp 'global-minor-modes)
-                     (memq fn global-minor-modes))
-                (setq global t)
-                (setq enabled t))
-               ((and (boundp 'local-minor-modes)
-                     (memq fn local-minor-modes))
-                (setq enabled t))
-               ((or (get fn 'globalized-minor-mode)
-                    (and var (not (local-variable-if-set-p var)))
-                    (string-prefix-p "global-" (symbol-name fn)))
-                (setq global t)
-                (setq enabled (and var (symbol-value var))))
-               ((setq enabled (and var (symbol-value var)))))
+                ((and (boundp 'global-minor-modes)
+                      (memq fn global-minor-modes))
+                 (setq global t)
+                 (setq enabled t))
+                ((and (boundp 'local-minor-modes)
+                      (memq fn local-minor-modes))
+                 (setq enabled t))
+                ((or (get fn 'globalized-minor-mode)
+                     (and var (not (local-variable-if-set-p var)))
+                     (string-prefix-p "global-" (symbol-name fn)))
+                 (setq global t)
+                 (setq enabled (and var (symbol-value var))))
+                ((setq enabled (and var (symbol-value var)))))
               (list (list fn var global
                           (and (not (memq fn minions-demoted-modes))
                                (not (and global
@@ -338,5 +338,6 @@ minor modes in a space conserving menu."))
 (provide 'minions)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
+;; lisp-indent-local-overrides: ((cond . 0) (interactive . 0))
 ;; End:
 ;;; minions.el ends here
