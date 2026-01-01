@@ -1,6 +1,6 @@
 ;;; minions.el --- A minor-mode menu for the mode line  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2018-2025 Jonas Bernoulli
+;; Copyright (C) 2018-2026 Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <emacs.minions@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/tarsius/minions
