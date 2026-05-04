@@ -9,7 +9,7 @@
 ;; Package-Version: 1.2.0
 ;; Package-Requires: (
 ;;     (emacs  "26.1")
-;;     (compat "30.1"))
+;;     (compat "31.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -306,8 +306,7 @@ mouse-1: Display minor modes menu")))
                    (cons (string :tag "Before string")
                          (string :tag "After string")))))
 
-(static-if (boundp 'mode-line-minor-modes)
-    nil
+(static-unless (boundp 'mode-line-minor-modes)
   (put 'minions-mode-line-modes 'risky-local-variable t)
   (defvar minions-mode-line-modes
     (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
