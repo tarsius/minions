@@ -9,7 +9,8 @@
 ;; Package-Version: 1.2.0
 ;; Package-Requires: (
 ;;     (emacs  "26.1")
-;;     (compat "31.0"))
+;;     (compat "31.0")
+;;     (seq     "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -65,6 +66,7 @@
 
 (require 'cl-lib)
 (require 'compat)
+(require 'seq)
 
 (eval-when-compile (require 'subr-x))
 
@@ -84,7 +86,7 @@ be placed in a sub-menu, even when enabled."
 (defcustom minions-promoted-modes
   (nconc
    ;; This returns all the bindings added in "bindings.el".
-   (delq nil (mapcar #'car-safe mode-line-mode-menu))
+   (seq-filter #'car-safe mode-line-mode-menu)
    ;; This is the only binding that is only added once the
    ;; respective library is loaded.
    '(ruler-mode))
@@ -207,7 +209,7 @@ are enabled."
                     minor-mode-alist))
 
 (defun minions--modes ()
-  (mapcan
+  (seq-keep
    (lambda (fn)
      (let ((var (and (boundp fn) fn))
            (ignore nil))
@@ -236,14 +238,14 @@ are enabled."
                  (setq global t)
                  (setq enabled (and var (symbol-value var))))
                 ((setq enabled (and var (symbol-value var)))))
-              (list (list fn var global
-                          (and (not (memq fn minions-demoted-modes))
-                               (not (and global
-                                         (memq 'all-global-modes
-                                               minions-demoted-modes)))
-                               (and (or enabled
-                                        (memq fn minions-promoted-modes))
-                                    t))))))))
+              (list fn var global
+                    (and (not (memq fn minions-demoted-modes))
+                         (not (and global
+                                   (memq 'all-global-modes
+                                         minions-demoted-modes)))
+                         (and (or enabled
+                                  (memq fn minions-promoted-modes))
+                              t)))))))
    (sort minor-mode-list #'string<)))
 
 (defun minions--mode-menu (fn var)
