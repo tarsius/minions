@@ -43,3 +43,4 @@ Compatibility information can be found [[https://github.com/tarsius/minions/wiki
 #+html: <a href="https://github.com/tarsius/minions/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/tarsius/minions/actions/workflows/compile.yml/badge.svg"/></a>
 #+html: <a href="https://snapshots.melpa.org/#/minions"><img alt="MELPA Snapshots" src="https://snapshots.melpa.org/packages/minions-badge.svg"/></a>
 #+html: <a href="https://releases.melpa.org/#/minions"><img alt="MELPA Releases" src="https://releases.melpa.org/packages/minions-badge.svg"/></a>
+#+html: <a href="https://emacsair.me/human"><img alt="human made" src="https://emacsair.me/assets/badges/human.svg"/></a>
